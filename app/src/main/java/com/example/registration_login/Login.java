@@ -2,10 +2,17 @@ package com.example.registration_login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +24,8 @@ public class Login extends AppCompatActivity {
     private Button btnLogin,button2 ;
 
     private TextView etLoginEmail,etLoginPassword;
+    private FirebaseAuth firebaseAuth;
+
 
 
     @Override
@@ -76,11 +85,66 @@ public class Login extends AppCompatActivity {
 
         }
 
+
+
         Toast.makeText(this, " Login successfull", Toast.LENGTH_SHORT).show();
 
 
         Intent intent=new Intent(Login.this,Homescreen.class);
         startActivity(intent);
+
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        DatabaseReference userRef= database.getReference();
+
+        userRef.orderByChild("email").equalTo(email).get().addOnCompleteListener(task ->
+        {
+
+            if(task.isSuccessful())
+            {
+
+                boolean userFound=true;
+
+                for(DataSnapshot snapshot:task.getResult().getChildren())
+                {
+
+                    User user = snapshot.getValue(User.class);
+
+                    if(user==null)
+                    {
+
+                        Log.d("Firebase","Snapshot if full");
+                        continue;
+
+                    }
+
+                    if(user.password.equals(password))
+                    {
+                        Toast.makeText(this, "Login successfull", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Login.this,Homescreen.class));
+                        finish();
+                        userFound=true;
+                        break;
+
+                    }
+
+
+                }
+
+                if(!userFound)
+                {
+                    Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this, "Error"+task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("FirebaseError",task.getException().getMessage());
+
+                }
+
+            }
+        });
+
+
+
 
         finish();
 

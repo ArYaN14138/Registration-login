@@ -18,12 +18,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.Firebase;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+
 public class Registration extends AppCompatActivity {
 
     private static final int PICK_IMAGE = 1;
     private ImageView imageViewPhoto;
     private Button btnRegister;
     private Button buttonClick;
+
+    private FirebaseAuth firebaseAuth;
+
 
     private TextView etUsername,etEmail,etPassword;
 
@@ -34,6 +41,10 @@ public class Registration extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_registration);
+        FirebaseApp.initializeApp(this);//initialize the firebase setup.
+
+        firebaseAuth=FirebaseAuth.getInstance();
+
 
         imageViewPhoto=findViewById(R.id.imageViewPhoto);
         btnRegister=findViewById(R.id.btnRegister);
@@ -113,10 +124,33 @@ public class Registration extends AppCompatActivity {
 
 
         }
-        Toast.makeText(this, "Registration is Successfull", Toast.LENGTH_SHORT).show();
+
+        firebaseAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(task ->
+        {
 
 
-        clearform();
+            if(task.isSuccessful())
+            {
+                Toast.makeText(this, "Registration is done", Toast.LENGTH_SHORT).show();
+                clearform();
+            }
+            else
+            {
+                Toast.makeText(this, "Registration is failed"+ task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+       // else {
+        //    Toast.makeText(this, "Registration is Successfull", Toast.LENGTH_SHORT).show();
+
+       // }
+
+
+
+
+
+
 
 
 
