@@ -21,6 +21,11 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.firebase.Firebase;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.net.URI;
 
 public class Registration extends AppCompatActivity {
 
@@ -30,6 +35,12 @@ public class Registration extends AppCompatActivity {
     private Button buttonClick;
 
     private FirebaseAuth firebaseAuth;
+
+    private DatabaseReference databaseReference;
+
+    private Uri selectedImageUri;
+
+
 
 
     private TextView etUsername,etEmail,etPassword;
@@ -44,6 +55,8 @@ public class Registration extends AppCompatActivity {
         FirebaseApp.initializeApp(this);//initialize the firebase setup.
 
         firebaseAuth=FirebaseAuth.getInstance();
+        databaseReference= FirebaseDatabase.getInstance().getReference("Users");
+
 
 
         imageViewPhoto=findViewById(R.id.imageViewPhoto);
@@ -131,6 +144,12 @@ public class Registration extends AppCompatActivity {
 
             if(task.isSuccessful())
             {
+
+                FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
+                if(firebaseUser!=null)
+                {
+
+                }
                 Toast.makeText(this, "Registration is done", Toast.LENGTH_SHORT).show();
                 clearform();
             }
